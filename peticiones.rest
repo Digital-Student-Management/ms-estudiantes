@@ -1,0 +1,89 @@
+### ============================================================
+###  🎓 ms-estudiantes — Panel de Pruebas de Endpoints
+###  Puerto Asignado: 8084
+###  Requisito: Extensión "REST Client" en VS Code
+### ============================================================
+
+### ============================================================
+### 📝 SECCIÓN 1: MATRÍCULAS
+### ============================================================
+
+### 1.1. Crear nueva Matrícula
+POST http://localhost:8084/api/matriculas
+Content-Type: application/json
+
+{
+  "fechaInscripcion": "2026-03-01",
+  "estadoMatricula": "VIGENTE",
+  "idEstudiante": 1,
+  "idCurso": 1
+}
+
+### 1.2. Listar todas las matrículas
+GET http://localhost:8084/api/matriculas
+
+### 1.3. Buscar matrícula por ID
+GET http://localhost:8084/api/matriculas/1
+
+### 1.4. Actualizar estado de matrícula
+PUT http://localhost:8084/api/matriculas/1
+Content-Type: application/json
+
+{
+  "estadoMatricula": "RETIRADO"
+}
+
+### 1.5. Eliminar matrícula
+DELETE http://localhost:8084/api/matriculas/1
+
+
+### ============================================================
+### ⚠️ SECCIÓN 2: ANOTACIONES
+### ============================================================
+
+### 2.1. Crear una Anotación Positiva/Negativa
+POST http://localhost:8084/api/anotaciones
+Content-Type: application/json
+
+{
+  "tipoAnotacion": "NEGATIVA",
+  "descripcionAnotacion": "El estudiante interrumpe constantemente la clase.",
+  "fecha": "2026-05-18",
+  "idDocente": 2,
+  "idEstudiante": 1
+}
+
+### 2.2. Listar todas las anotaciones
+GET http://localhost:8084/api/anotaciones
+
+### 2.3. Buscar anotaciones por Estudiante
+GET http://localhost:8084/api/anotaciones/estudiante/1
+
+### 2.4. Eliminar anotación
+DELETE http://localhost:8084/api/anotaciones/1
+
+
+### ============================================================
+### 🏥 SECCIÓN 3: ANTECEDENTES Y HOJA DE VIDA
+### ============================================================
+
+### 3.1. Crear Ficha de Antecedentes Completa (Hoja de Vida)
+POST http://localhost:8084/api/antecedentes
+Content-Type: application/json
+
+{
+  "idEstudiante": 1,
+  "alergias": "Ninguna",
+  "condicionesCronicas": "Asma leve",
+  "medicamentosRecetados": "Salbutamol S.O.S",
+  "colegioProcedencia": "Colegio San Juan",
+  "anoProcedencia": 2025,
+  "promedioFinalGeneral": 6.2,
+  "observacionGeneral": "Estudiante se integra sin problemas al nuevo grupo curso."
+}
+
+### 3.2. Listar todos los antecedentes
+GET http://localhost:8084/api/antecedentes
+
+### 3.3. Buscar Ficha de Antecedentes por ID de Estudiante
+GET http://localhost:8084/api/antecedentes/estudiante/1
