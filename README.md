@@ -150,5 +150,3 @@ Para agilizar los ciclos de testing en la capa del controlador sin requerir de s
 2. Abre el archivo `peticiones.rest`.
 3. Presiona el botón flotante **`Send Request`** ubicado encima de cada ruta HTTP.
 4. Analiza la respuesta estructurada del servidor en la pestaña derecha dividida.
-
-> *Desarrollado de forma modular para el ecosistema informático del Colegio Bernardo O'Higgins.*
