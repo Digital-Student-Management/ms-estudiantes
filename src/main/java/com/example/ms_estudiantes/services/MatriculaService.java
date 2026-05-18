@@ -18,8 +18,8 @@ public class MatriculaService {
     private final String MS_USUARIOS_URL = "http://localhost:8080/api/usuarios/";
 
     public MatriculaResponseDTO registrar(MatriculaRequestDTO request) {
-        validarUsuario(request.getIdEstudiante(), "Estudiante no encontrado en el sistema escolar.");
-        validarUsuario(request.getIdDirectivo(), "Directivo/Funcionario no registrado.");
+        validarRolUsuario(request.getIdEstudiante(), "ESTUDIANTE");
+        validarRolUsuario(request.getIdDirectivo(), "DIRECTIVO");
 
         Matricula matricula = Matricula.builder()
                 .idEstudiante(request.getIdEstudiante())
@@ -56,11 +56,27 @@ public class MatriculaService {
         matriculaRepository.deleteById(id);
     }
 
-    private void validarUsuario(Long id, String errorMsg) {
+
+        // Método Auxiliar de Validación Estricta
+        @SuppressWarnings("unchecked")
+        private void validarRolUsuario(Long id, String rolEsperado) {
         try {
-            restTemplate.getForEntity(MS_USUARIOS_URL + id, Object.class);
+            java.util.Map<String, Object> response = restTemplate.getForObject(
+                    MS_USUARIOS_URL + id, 
+                    java.util.Map.class
+            );
+            
+            String tipoUsuario = (String) response.get("tipoUsuario");
+            if (!rolEsperado.equals(tipoUsuario)) {
+                throw new RuntimeException("Incongruencia de roles: Se esperaba un " + rolEsperado + " pero el ID corresponde a un " + tipoUsuario);
+            }
+        } catch (org.springframework.web.client.HttpClientErrorException.NotFound e) {
+            throw new RuntimeException("El " + rolEsperado + " con ID " + id + " no existe en el sistema.");
         } catch (Exception e) {
-            throw new RuntimeException(errorMsg);
+            if (e.getMessage() != null && e.getMessage().contains("Incongruencia")) {
+                throw new RuntimeException(e.getMessage());
+            }
+            throw new RuntimeException("Fallo en la comunicación con MS-Usuarios: " + e.getMessage());
         }
     }
 

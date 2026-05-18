@@ -20,11 +20,8 @@ public class AnotacionService {
     private final RestTemplate restTemplate;
 
     public AnotacionResponseDTO crearAnotacion(AnotacionRequestDTO request) {
-        try {
-            restTemplate.getForEntity("http://localhost:8080/api/usuarios/" + request.getIdEstudiante(), Object.class);
-        } catch (Exception e) {
-            throw new RuntimeException("El estudiante no existe para asignarle una anotación.");
-        }
+        validarRolUsuario(request.getIdEstudiante(), "ESTUDIANTE");
+    
 
         Anotacion anotacion = Anotacion.builder()
                 .idEstudiante(request.getIdEstudiante())
@@ -71,6 +68,30 @@ public class AnotacionService {
         HojaVida hv = obtenerHojaVida(idEstudiante);
         hv.setObservacionGeneral(observacion);
         return hojaVidaRepository.save(hv);
+    }
+
+
+    // Método Auxiliar de Validación Estricta
+    @SuppressWarnings("unchecked")
+    private void validarRolUsuario(Long id, String rolEsperado) {
+        try {
+            java.util.Map<String, Object> response = restTemplate.getForObject(
+                    "http://localhost:8080/api/usuarios/" + id, 
+                    java.util.Map.class
+            );
+            
+            String tipoUsuario = (String) response.get("tipoUsuario");
+            if (!rolEsperado.equals(tipoUsuario)) {
+                throw new RuntimeException("Incongruencia de roles: Se esperaba un " + rolEsperado + " pero el ID corresponde a un " + tipoUsuario);
+            }
+        } catch (org.springframework.web.client.HttpClientErrorException.NotFound e) {
+            throw new RuntimeException("El " + rolEsperado + " con ID " + id + " no existe en el sistema.");
+        } catch (Exception e) {
+            if (e.getMessage() != null && e.getMessage().contains("Incongruencia")) {
+                throw new RuntimeException(e.getMessage());
+            }
+            throw new RuntimeException("Fallo en la comunicación con MS-Usuarios: " + e.getMessage());
+        }
     }
 
     private AnotacionResponseDTO mapearAResponse(Anotacion anotacion) {
